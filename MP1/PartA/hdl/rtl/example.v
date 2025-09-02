@@ -23,10 +23,10 @@
 module pA_rtl(
     input  wire       clk_125,   // 125 MHz PL clock
     input  wire [1:0] sw,        // sw[0]=SW0, sw[1]=SW1
-    output reg        ld4_b_n,   // LD4 blue (active-low)
+    output reg        ld4_b_n,   // LD4 blue (active-high)
     output reg        ld4_r_n,   // LD4 red  (keep OFF)
     output reg        ld4_g_n,   // LD4 green(keep OFF)
-    output reg        ld5_b_n,   // LD5 blue (active-low)
+    output reg        ld5_b_n,   // LD5 blue (active-high)
     output reg        ld5_r_n,   // LD5 red  (keep OFF)
     output reg        ld5_g_n    // LD5 green(keep OFF)
 );
@@ -40,8 +40,8 @@ module pA_rtl(
     wire [2:0] sr1_next = {sr1[1:0], sw[1]};
 
     // Combinational next LED values (use NEXT MSB so visible delay = 3)
-    wire ld4_b_n_next = ~sr0_next[2];
-    wire ld5_b_n_next = ~sr1_next[2];
+    wire ld4_b_n_next = sr0_next[2];
+    wire ld5_b_n_next = sr1_next[2];
 
     always @(posedge clk_125) begin
         // advance pipelines
@@ -52,11 +52,11 @@ module pA_rtl(
         ld4_b_n <= ld4_b_n_next;   // exactly 3-cycle lag from sw[0]
         ld5_b_n <= ld5_b_n_next;   // exactly 3-cycle lag from sw[1]
 
-        // keep red/green OFF (active-low -> drive HIGH)
-        ld4_r_n <= 1'b1;
-        ld4_g_n <= 1'b1;
-        ld5_r_n <= 1'b1;
-        ld5_g_n <= 1'b1;
+        // keep red/green OFF (active-high -> drive low)
+        ld4_r_n <= 1'b0;
+        ld4_g_n <= 1'b0;
+        ld5_r_n <= 1'b0;
+        ld5_g_n <= 1'b0;
     end
 
 endmodule
