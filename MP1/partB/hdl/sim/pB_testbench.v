@@ -114,7 +114,6 @@ module pB_testbench;
             sw = i[1:0];
             @(posedge clk); 
             check_led(sw, mode_ref, "Baseline M0 sweep");
-           // hold through 2 rising edges 
              #2;
         end
         #1;
@@ -186,7 +185,7 @@ module pB_testbench;
         @(posedge clk);
             #2;
 
-        // ================== 6) NEW: Steady SW, walk through modes 0→1→2→3 ==================
+        // ================== 6)  Steady SW, walk through modes 0→1→2→3 ==================
         sw = 2'b01;
         // Force Mode 0, then step modes with only buttons changing
         press_one_button(4'b0001, mode_ref, sw, "Steady SW: set M0");
