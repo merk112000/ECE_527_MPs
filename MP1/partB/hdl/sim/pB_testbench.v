@@ -112,7 +112,9 @@ module pB_testbench;
         for (i = 0; i < 4; i = i + 1) begin
             #1;
             sw = i[1:0];
-            @(posedge clk); 
+            @(posedge clk);
+            #1;
+            btn = 0; 
             check_led(sw, mode_ref, "Baseline M0 sweep");
              #2;
         end
@@ -154,8 +156,7 @@ module pB_testbench;
            
             #2;
         end
-        #1;
-        btn = 4'b0000;
+
         @(posedge clk);
         #1;
         // ================== 4) Set Mode 3, sweep switches ==================
@@ -166,6 +167,8 @@ module pB_testbench;
             #1;
             sw = i[1:0];
             @(posedge clk);
+             #1;
+             btn = 4'b0000;
             check_led(sw, mode_ref, "M3 sweep");
             #2;
         end

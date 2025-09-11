@@ -36,7 +36,7 @@ module pB_rtl(
     wire sys_rst = por_busy; // synchronous, HIGH for first ~16 cycles
 
 
-    wire [1:0] sw_s   = sw;
+    reg [1:0] sw_s;
     wire [3:0] btn_s  = btn;   // assumed active-HIGH; invert here if board buttons are active-LOW
 
     // ----------------------------------------------------------------
@@ -49,13 +49,16 @@ module pB_rtl(
     reg[1:0] mode_n = 2'd0;
     always @(posedge clk_125) begin
         if (sys_rst) begin
-            mode_n <= 2'd0; end
-        else begin      
+            mode_n <= 2'd0; 
+            sw_s <= 2'd0; end
+        else begin   
+            sw_s <= sw;   
                        // default: hold current state
             if      (btn_s[3]) mode_n = 2'd3;
             else if (btn_s[2]) mode_n = 2'd2;
             else if (btn_s[1]) mode_n = 2'd1;
             else if (btn_s[0]) mode_n = 2'd0;   
+            
         end
     end
   
