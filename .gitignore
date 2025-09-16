@@ -1,2 +1,3 @@
 # Ignore MP2 Python virtual environment
 MP2/venv/
+MP2/mp2_outputs
