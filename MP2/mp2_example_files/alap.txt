@@ -1,0 +1,9 @@
+Node 0: t=2
+Node 1: t=0
+Node 2: t=3
+Node 3: t=3
+Node 4: t=5
+Node 5: t=6
+Node 6: t=4
+Node 7: t=4
+Finished t=7

@@ -1,0 +1,9 @@
+Node 0: Ready t=0; Running t=0; Finished t=0
+Node 1: Ready t=0; Running t=0; Finished t=2
+Node 2: Ready t=0; Running t=1; Finished t=1
+Node 3: Ready t=3; Running t=3; Finished t=5
+Node 4: Ready t=1; Running t=2; Finished t=2
+Node 5: Ready t=6; Running t=6; Finished t=6
+Node 6: Ready t=2; Running t=4; Finished t=6
+Node 7: Ready t=1; Running t=1; Finished t=3
+Finished t=7
