@@ -19,6 +19,8 @@ class TaskNode:
         self.ready_time = None
         self.start_time = None
         self.finish_time = None
+        self.running_time = None
+        self.priority = None
 
 # -------------------
 # File Parsing
@@ -108,6 +110,10 @@ def list_scheduling(nodes, timing, constraints):
     # Track units in use: operator -> list of finish times
     running_units = defaultdict(list)
 
+    # Initialize node priority = slack
+    for n in nodes.values():
+        n.priority = n.slack
+
     while unscheduled:
         # 1. Identify ready nodes
         ready_nodes = []
@@ -118,8 +124,8 @@ def list_scheduling(nodes, timing, constraints):
                 if node.ready_time <= time:
                     ready_nodes.append(node)
 
-        # 2. Sort by slack first, then Node ID
-        ready_nodes.sort(key=lambda n: (n.slack, n.id))
+        # 2. Sort by priority (lower = higher), then Node ID
+        ready_nodes.sort(key=lambda n: (n.priority, n.id))
 
         scheduled_this_cycle = []
 
@@ -130,11 +136,15 @@ def list_scheduling(nodes, timing, constraints):
             # Schedule if hardware unit is available
             if len(running_units[node.operator]) < constraints[node.operator]:
                 node.running_time = time
-                node.finish_time = node.running_time + timing[node.operator] - 1
+                node.start_time = time
+                node.finish_time = node.start_time + timing[node.operator] - 1
                 running_units[node.operator].append(node.finish_time)
                 scheduled_order.append(node)
                 unscheduled.remove(node.id)
                 scheduled_this_cycle.append(node.id)
+            else:
+                # Node is ready but blocked, decrease priority (higher priority)
+                node.priority = max(0, node.priority - 1)
 
         # 3. Advance time
         if scheduled_this_cycle:
