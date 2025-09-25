@@ -144,7 +144,7 @@ def list_scheduling(nodes, timing, constraints):
                 scheduled_this_cycle.append(node.id)
             else:
                 # Node is ready but blocked, decrease priority (higher priority)
-                node.priority = max(0, node.priority - 1)
+                node.priority = node.priority - 1
 
         # 3. Advance time
         if scheduled_this_cycle:
