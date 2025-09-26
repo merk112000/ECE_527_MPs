@@ -4,9 +4,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from networkx.drawing.nx_pydot import graphviz_layout
 
-# -------------------
 # Task Node
-# -------------------
 class TaskNode:
     def __init__(self, node_id, children, operator):
         self.id = node_id
@@ -22,9 +20,7 @@ class TaskNode:
         self.running_time = None
         self.priority = None
 
-# -------------------
 # File Parsing
-# -------------------
 def load_graph(file_path):
     with open(file_path, 'r') as f:
         lines = [line.strip() for line in f.readlines()]
@@ -61,9 +57,7 @@ def load_constraints(file_path):
             constraints[op] = int(count)
     return constraints
 
-# -------------------
 # Scheduling
-# -------------------
 def compute_asap(nodes, timing):
     queue = deque([n for n in nodes.values() if not n.parents])
     for n in queue:
@@ -99,9 +93,7 @@ def compute_slack(nodes):
     for n in nodes.values():
         n.slack = n.alap - n.asap
 
-# -------------------
 # List Scheduling
-# -------------------
 def list_scheduling(nodes, timing, constraints):
     unscheduled = set(nodes.keys())
     scheduled_order = []
@@ -143,24 +135,17 @@ def list_scheduling(nodes, timing, constraints):
                 unscheduled.remove(node.id)
                 scheduled_this_cycle.append(node.id)
             else:
-                # Node is ready but blocked, decrease priority (higher priority)
+                # Node is ready but blocked, decrease priority
                 node.priority = node.priority - 1
 
         # 3. Advance time
-        if scheduled_this_cycle:
-            time += 1
-        else:
-            # Jump to earliest finish time if no node could be scheduled
-            next_times = [ft for ft_list in running_units.values() for ft in ft_list if ft >= time]
-            time = min(next_times) + 1 if next_times else time + 1
+        time += 1
 
     total_time = max(n.finish_time for n in scheduled_order)
     return scheduled_order, total_time
 
 
-# -------------------
 # Output Functions
-# -------------------
 def write_asap(nodes, folder):
     os.makedirs(folder, exist_ok=True)
     with open(os.path.join(folder, "asap.txt"), 'w') as f:
@@ -195,9 +180,7 @@ def write_list_schedule(nodes, folder):
         f.write(f"Finished t={finish_time}\n")
 
 
-# -------------------
 # Visualization (with List Scheduling)
-# -------------------
 def draw_task_graph(nodes):
     G = nx.DiGraph()
     for node in nodes.values():
@@ -220,9 +203,7 @@ def draw_task_graph(nodes):
     plt.show()
 
 
-# -------------------
-# Grading / Comparison (with line-by-line diff)
-# -------------------
+# Comparison/Grading
 def grade_outputs(folder, expected_folder):
     import difflib
     all_files = ["asap.txt", "alap.txt", "slack.txt", "list_scheduling.txt"]
@@ -241,16 +222,14 @@ def grade_outputs(folder, expected_folder):
                     print(line)
     print(f"Total score: {score}/{len(all_files)}")
 
-# -------------------
 # Main
-# -------------------
 if __name__ == "__main__":
     graph_file = "mp2_example_files/graph.txt"
     timing_file = "mp2_example_files/timing.txt"
     constraints_file = "mp2_example_files/constraints.txt"
 
     output_folder = "mp2_outputs"
-    expected_folder = "mp2_example_files"  # set this to the folder with your example outputs
+    expected_folder = "mp2_example_files"
 
     tasks, num_tasks = load_graph(graph_file)
     timing = load_timing(timing_file)
