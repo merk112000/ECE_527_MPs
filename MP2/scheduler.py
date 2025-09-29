@@ -1,8 +1,5 @@
 import os
 from collections import deque, defaultdict
-import networkx as nx
-import matplotlib.pyplot as plt
-from networkx.drawing.nx_pydot import graphviz_layout
 
 # Task Node
 class TaskNode:
@@ -146,90 +143,40 @@ def list_scheduling(nodes, timing, constraints):
 
 
 # Output Functions
-def write_asap(nodes, folder):
-    os.makedirs(folder, exist_ok=True)
-    with open(os.path.join(folder, "asap.txt"), 'w') as f:
+def write_asap(nodes):
+    with open("asap.txt", 'w') as f:
         for n_id in sorted(nodes):
             f.write(f"Node {n_id}: t={nodes[n_id].asap}\n")
         finish_time = max(n.asap + timing[n.operator] for n in nodes.values())
         f.write(f"Finished t={finish_time}\n")
 
-def write_alap(nodes, folder):
-    os.makedirs(folder, exist_ok=True)
-    with open(os.path.join(folder, "alap.txt"), 'w') as f:
+def write_alap(nodes):
+    with open("alap.txt", 'w') as f:
         for n_id in sorted(nodes):
             f.write(f"Node {n_id}: t={nodes[n_id].alap}\n")
         finish_time = max(n.alap + timing[n.operator] for n in nodes.values())
         f.write(f"Finished t={finish_time}\n")
 
-def write_slack(nodes, folder):
-    os.makedirs(folder, exist_ok=True)
-    with open(os.path.join(folder, "slack.txt"), 'w') as f:
+def write_slack(nodes):
+    with open("slack.txt", 'w') as f:
         for n_id in sorted(nodes):
             f.write(f"Node {n_id}: slack={nodes[n_id].slack}\n")
 
-def write_list_schedule(nodes, folder):
-    os.makedirs(folder, exist_ok=True)
+def write_list_schedule(nodes):
     # Sort nodes by ID
     nodes.sort(key=lambda n: n.id)
-    with open(os.path.join(folder, "list_scheduling.txt"), 'w') as f:
+    with open("list_scheduling.txt", 'w') as f:
         for node in nodes:
             line = f"Node {node.id}: Ready t={node.ready_time}; Running t={node.running_time}; Finished t={node.finish_time}\n"
             f.write(line)
         finish_time = max(n.finish_time for n in nodes) + 1
         f.write(f"Finished t={finish_time}\n")
 
-
-# Visualization (with List Scheduling)
-def draw_task_graph(nodes):
-    G = nx.DiGraph()
-    for node in nodes.values():
-        label = (f"{node.id}\n{node.operator}\n"
-                 f"ASAP={node.asap}\nALAP={node.alap}\nSlack={node.slack}\n"
-                 f"Ready={node.ready_time}\nStart={node.start_time}\nFinish={node.finish_time-1}")
-        G.add_node(node.id, label=label)
-    for node in nodes.values():
-        for child_id in node.children:
-            G.add_edge(node.id, child_id)
-
-    pos = graphviz_layout(G, prog='dot')
-    labels = nx.get_node_attributes(G, 'label')
-
-    plt.figure(figsize=(14,10))
-    nx.draw(G, pos, labels=labels, with_labels=True,
-            node_size=8500, node_color='lightblue',
-            font_size=10, font_weight='bold', arrowsize=40)
-    plt.title("Task Graph with ASAP, ALAP, Slack, and List Scheduling")
-    plt.show()
-
-
-# Comparison/Grading
-def grade_outputs(folder, expected_folder):
-    import difflib
-    all_files = ["asap.txt", "alap.txt", "slack.txt", "list_scheduling.txt"]
-    score = 0
-    for file in all_files:
-        path_generated = os.path.join(folder, file)
-        path_expected = os.path.join(expected_folder, file)
-        with open(path_generated, 'r') as f1, open(path_expected, 'r') as f2:
-            gen_lines = f1.readlines()
-            exp_lines = f2.readlines()
-            if gen_lines == exp_lines:
-                score += 1
-            else:
-                print(f"Mismatch in {file}:")
-                for line in difflib.unified_diff(exp_lines, gen_lines, fromfile='expected', tofile='generated', lineterm=''):
-                    print(line)
-    print(f"Total score: {score}/{len(all_files)}")
-
 # Main
 if __name__ == "__main__":
-    graph_file = "mp2_example_files/graph.txt"
-    timing_file = "mp2_example_files/timing.txt"
-    constraints_file = "mp2_example_files/constraints.txt"
-
-    output_folder = "mp2_outputs"
-    expected_folder = "mp2_example_files"
+    graph_file = "graph.txt"
+    timing_file = "timing.txt"
+    constraints_file = "constraints.txt"
 
     tasks, num_tasks = load_graph(graph_file)
     timing = load_timing(timing_file)
@@ -241,12 +188,10 @@ if __name__ == "__main__":
 
     scheduled_order, total_time = list_scheduling(tasks, timing, constraints)
 
-    write_asap(tasks, output_folder)
-    write_alap(tasks, output_folder)
-    write_slack(tasks, output_folder)
-    write_list_schedule(scheduled_order, output_folder)
+    write_asap(tasks)
+    write_alap(tasks)
+    write_slack(tasks)
+    write_list_schedule(scheduled_order)
 
-    draw_task_graph(tasks)
 
-    print(f"All output files written to '{output_folder}'")
-    grade_outputs(output_folder, expected_folder)
+    print(f"All output files written")
